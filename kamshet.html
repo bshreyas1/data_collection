@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Data Collection</title>
+    <style>
+        body {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFmAHoFHKIy17z50yctiGuvSEfxfwYnoOFNA&s');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        form {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            margin: auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .family-member {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Data Form</h1>
+    <form id="userDataForm">
+        <label for="family">Family:</label>
+        <select id="family" name="family" required>
+            <option value="" disabled selected>Select a family</option>
+            <option value="Family A">Family A</option>
+            <option value="Family B">Family B</option>
+            <option value="Family C">Family C</option>
+            <!-- Add more families as needed -->
+        </select><br><br>
+
+        <label for="nativePlace">Native Place:</label>
+        <input type="text" id="nativePlace" name="nativePlace" required><br><br>
+
+        <label for="numberOfPeople">Number of People in Family:</label>
+        <input type="number" id="numberOfPeople" name="numberOfPeople" required min="1"><br><br>
+
+        <div id="familyMembersContainer"></div>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        const numberOfPeopleInput = document.getElementById('numberOfPeople');
+        const familyMembersContainer = document.getElementById('familyMembersContainer');
+
+        numberOfPeopleInput.addEventListener('input', function() {
+            const numberOfPeople = parseInt(this.value) || 0;
+            familyMembersContainer.innerHTML = ''; // Clear previous inputs
+
+            for (let i = 0; i < numberOfPeople; i++) {
+                const memberDiv = document.createElement('div');
+                memberDiv.classList.add('family-member');
+                memberDiv.innerHTML = `
+                    <h3>Member ${i + 1}</h3>
+                    <label for="name${i}">Name:</label>
+                    <input type="text" id="name${i}" name="name${i}" required><br>
+
+                    <label for="dob${i}">Date of Birth:</label>
+                    <input type="date" id="dob${i}" name="dob${i}" required><br>
+
+                    <label for="age${i}">Age:</label>
+                    <input type="number" id="age${i}" name="age${i}" required readonly><br>
+
+                    <div id="additionalFields${i}" style="display:none;">
+                        <label for="mobile${i}">Mobile Number:</label>
+                        <input type="tel" id="mobile${i}" name="mobile${i}"><br>
+
+                        <label for="whatsapp${i}">WhatsApp Number:</label>
+                        <input type="tel" id="whatsapp${i}" name="whatsapp${i}"><br>
+
+                        <label for="email${i}">Email Address:</label>
+                        <input type="email" id="email${i}" name="email${i}"><br>
+
+                        <label for="pursuingEducation${i}">Pursuing Education:</label>
+                        <input type="text" id="pursuingEducation${i}" name="pursuingEducation${i}"><br>
+
+                        <div id="higherEducationFields${i}" style="display:none;">
+                            <label for="highestEducation${i}">Highest Education:</label>
+                            <input type="text" id="highestEducation${i}" name="highestEducation${i}"><br>
+
+                            <label for="profession${i}">Profession:</label>
+                            <input type="text" id="profession${i}" name="profession${i}"><br>
+                        </div>
+                    </div>
+
+                    <label for="bloodGroup${i}">Blood Group:</label>
+                    <select id="bloodGroup${i}" name="bloodGroup${i}" required>
+                        <option value="" disabled selected>Select Blood Group</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                    </select><br><br>
+                `;
+                
+                familyMembersContainer.appendChild(memberDiv);
+
+                // Calculate age based on DOB
+                const dobInput = document.getElementById(`dob${i}`);
+                const ageInput = document.getElementById(`age${i}`);
+                dobInput.addEventListener('input', function() {
+                    const dob = new Date(this.value);
+                    const age = new Date().getFullYear() - dob.getFullYear();
+                    ageInput.value = age;
+
+                    // Show/hide additional fields based on age
+                    const additionalFields = document.getElementById(`additionalFields${i}`);
+                    const higherEducationFields = document.getElementById(`higherEducationFields${i}`);
+                    const pursuingEducationInput = document.getElementById(`pursuingEducation${i}`);
+
+                    if (age > 15) {
+                        additionalFields.style.display = 'block';
+
+                        if (age > 22) {
+                            pursuingEducationInput.style.display = 'none';
+                            higherEducationFields.style.display = 'block';
+                        } else {
+                            pursuingEducationInput.style.display = 'block';
+                            higherEducationFields.style.display = 'none';
+                        }
+                    } else {
+                        additionalFields.style.display = 'none';
+                        pursuingEducationInput.style.display = 'none';
+                        higherEducationFields.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        document.getElementById('userDataForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Data submitted successfully!');
+                this.reset();
+                familyMembersContainer.innerHTML = ''; // Clear the members
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
